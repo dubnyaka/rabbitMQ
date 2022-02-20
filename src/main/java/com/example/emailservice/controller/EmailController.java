@@ -31,4 +31,9 @@ public class EmailController {
         return emailService.create(content);
     }
 
+    @PutMapping(value = "/")
+    public void setEmailStatus(@RequestBody EmailData emailData) {
+        emailService.setStatus(emailData);
+    }
+
 }
