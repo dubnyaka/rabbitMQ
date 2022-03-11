@@ -18,7 +18,7 @@ public class Publisher {
 
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
             channel.basicPublish("", QUEUE_NAME, null, id.getBytes());
-            System.out.println(" [x] Sent '" + id + "'");
+            System.out.println(" [x] Отправлено в очередь на отправку '" + id + "'");
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }

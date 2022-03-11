@@ -6,12 +6,9 @@ import com.example.messagingrabbitmq.Publisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.TimeoutException;
-
-
+@CrossOrigin
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -25,11 +22,13 @@ public class EmailService {
         return personDao.findById(id).orElse(null);
     }
 
-    public String create(String content) {
+    public String create(EmailData emailData) {
         String createdEmailId = personDao.insert(
                 EmailData.builder()
                         .status(STATUS_PENDING)
-                        .content(content)
+                        .subject(emailData.getSubject())
+                        .body(emailData.getBody())
+                        .receiver(emailData.getReceiver())
                         .errorDescription("")
                         .build()
         ).getId();
@@ -38,19 +37,5 @@ public class EmailService {
             Publisher.addEmailIdToSendQueue(createdEmailId);
         }
         return createdEmailId;
-    }
-
-    public void setStatus(EmailData emailData) {
-        Optional<EmailData> optionalEmailData = personDao.findById(emailData.getId());
-        if (optionalEmailData.isPresent()) {
-            EmailData emailDataFromDb = optionalEmailData.get();
-            if (emailData.getStatus().equals("ERROR")) {
-                emailDataFromDb.setStatus(emailData.getStatus());
-                emailDataFromDb.setErrorDescription(emailData.getErrorDescription());
-            } else {
-                emailDataFromDb.setStatus("SENT");
-            }
-            personDao.save(emailDataFromDb);
-        }
     }
 }
